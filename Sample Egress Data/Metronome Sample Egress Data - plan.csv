@@ -1,0 +1,3 @@
+id,name,description,billing_frequency,starting_on,custom_fields,environment_type,created_at,deprecated_at,updated_at
+5b81cb83-fa0b-4ad2-94c7-bbd81502e2d9,Free Plan,Free Plan,MONTHLY,,"{""x-seed-obj-id"":""free""}",SANDBOX,2024-04-01 15:16:59,,2024-04-01 15:16:59
+42e42afb-1817-4b1b-b20e-295f3d82c189,Infra SaaS Paygo,Infra SaaS Paygo,MONTHLY,,"{""x-seed-obj-id"":""infra-saas-paygo""}",SANDBOX,2024-04-01 15:16:59,,2024-04-01 15:16:59

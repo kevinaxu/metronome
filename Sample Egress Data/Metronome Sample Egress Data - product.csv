@@ -1,0 +1,6 @@
+id,name,description,custom_fields,created_at,environment_type,deprecated_at,updated_at
+6c2bd1ce-b955-4a8b-83cf-1ffa96ce8d6f,Storage,Storage,"{""x-seed-obj-id"":""storage""}",2024-04-01 15:16:58,SANDBOX,,2024-04-01 15:16:58
+08a79be8-27e2-4a91-9616-70590d45531f,Images modeled,Images modeled,"{""x-seed-obj-id"":""images-modeled""}",2024-04-01 15:16:57,SANDBOX,,2024-04-01 15:16:57
+8b28bc9a-9ad0-4cd0-845e-b9edbf0a8896,CPU Hours,CPU Hours,"{""x-seed-obj-id"":""cpu-hours""}",2024-04-01 15:16:58,SANDBOX,,2024-04-01 15:16:58
+4e381b40-b8a4-4fbd-8d47-26988c210839,Fine tuning,Fine tuning,"{""x-seed-obj-id"":""fine-tuning""}",2024-04-01 15:16:57,SANDBOX,,2024-04-01 15:16:57
+67deae3d-b324-4321-b3d2-e24582030cc9,Language models,Language models,"{""x-seed-obj-id"":""language-models""}",2024-04-01 15:16:57,SANDBOX,,2024-04-01 15:16:57

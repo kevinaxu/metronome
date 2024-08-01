@@ -1,0 +1,32 @@
+id,aggregate,aggregate_keys,environment_type,group_keys,name,created_at,archived_at,updated_at
+534271e6-db33-4ca5-ad1f-0e700b296a4e,sum,"[""storage_gb-hours""]",SANDBOX,"[""clusterid""]",Storage GB-Hours (us-east-1),2024-04-01 15:16:52,,2024-04-01 15:16:52
+bb88a970-e7a8-4084-b593-efd4ca38a084,sum,"[""cpu_hours""]",SANDBOX,"[""clusterid""]",CPU hours (r5.2xlarge),2024-04-01 15:16:48,,2024-04-01 15:16:48
+b25bdbc3-4d00-48a0-ac4b-4bd3c048cfe6,sum,"[""cpu_hours""]",SANDBOX,"[""clusterid""]",CPU hours (r5.4xlarge),2024-04-01 15:16:49,,2024-04-01 15:16:49
+783be7b9-0b77-457c-a9f4-d5afc400258c,sum,"[""words""]",SANDBOX,,Fine Tuning (langModel4),2024-04-01 15:16:56,,2024-04-01 15:16:56
+ef7283c5-c4fd-45b9-9f19-48ec14fbbb5c,sum,"[""cpu_hours""]",SANDBOX,"[""clusterid""]",CPU hours (m5.12xlarge),2024-04-01 15:16:51,,2024-04-01 15:16:51
+0be0355f-1990-4834-bebc-77cdf67fbb82,sum,"[""words""]",SANDBOX,,Fine Tuning (langModel2),2024-04-01 15:16:55,,2024-04-01 15:16:56
+03ee7ae6-1e6f-4ad4-8133-9fbf8ccc71ce,sum,"[""words""]",SANDBOX,,Fine Tuning (langModel1),2024-04-01 15:16:55,,2024-04-01 15:16:55
+edd8d791-8316-4ea0-aadf-d662b5b189a0,sum,"[""words""]",SANDBOX,,Language Model (langModel4),2024-04-01 15:16:55,,2024-04-01 15:16:55
+faae4c52-5929-467c-894c-53b807aa4502,sum,"[""words""]",SANDBOX,,Language Model (langModel3),2024-04-01 15:16:55,,2024-04-01 15:16:55
+cc0c5b75-ff97-4d73-840b-b58f9b10405a,sum,"[""cpu_hours""]",SANDBOX,"[""clusterid""]",CPU hours (m5.8xlarge),2024-04-01 15:16:50,,2024-04-01 15:16:50
+872c6aa4-5e24-4b8e-9940-3868cf0bf5d0,sum,"[""num_images""]",SANDBOX,,Images (512x512),2024-04-01 15:16:53,,2024-04-01 15:16:54
+939b7312-77db-4e34-97e9-c89cd3bf857c,sum,"[""words""]",SANDBOX,,Fine Tuning (langModel3),2024-04-01 15:16:56,,2024-04-01 15:16:56
+c690fe08-13ff-478e-8fcb-3815fffcb842,sum,"[""cpu_hours""]",SANDBOX,"[""clusterid""]",CPU hours (m5.2xlarge),2024-04-01 15:16:48,,2024-04-01 15:16:48
+b335b899-9104-47b3-8c9b-fbd8801f920d,sum,"[""cpu_hours""]",SANDBOX,"[""clusterid""]",CPU hours (c5.8xlarge),2024-04-01 15:16:50,,2024-04-01 15:16:50
+62f4e835-5d70-4f01-a9ea-61cdd96fd549,sum,"[""cpu_hours""]",SANDBOX,"[""clusterid""]",CPU hours (m5.16xlarge),2024-04-01 15:16:52,,2024-04-01 15:16:52
+d9c4b3b8-bf2a-45ed-a9e8-8f449abd38ed,sum,"[""cpu_hours""]",SANDBOX,"[""clusterid""]",CPU hours (m5.xlarge),2024-04-01 15:16:56,,2024-04-01 15:16:56
+1638cbee-e342-44ea-a7cb-e6980b441f56,sum,"[""num_images""]",SANDBOX,,Images (1024x1024),2024-04-01 15:16:54,,2024-04-01 15:16:54
+4c6b610b-ffe0-45b1-90e8-573b9344bfa8,sum,"[""storage_gb-hours""]",SANDBOX,"[""clusterid""]",Storage GB-Hours (us-east-2),2024-04-01 15:16:52,,2024-04-01 15:16:52
+b9c20ee8-3722-441b-a543-4e54f4cc945b,sum,"[""cpu_hours""]",SANDBOX,"[""clusterid""]",CPU hours (r5.12xlarge),2024-04-01 15:16:51,,2024-04-01 15:16:51
+6f1dc430-6353-4600-ac0d-416e4ab13ffb,sum,"[""cpu_hours""]",SANDBOX,"[""clusterid""]",CPU hours (c5.2xlarge),2024-04-01 15:16:48,,2024-04-01 15:16:48
+256fa5bb-c9d3-4397-a883-97844d11100d,sum,"[""cpu_hours""]",SANDBOX,"[""clusterid""]",CPU hours (m5.4xlarge),2024-04-01 15:16:49,,2024-04-01 15:16:49
+7aee61eb-8610-44ab-a8e2-d02f939f4b8d,sum,"[""cpu_hours""]",SANDBOX,"[""clusterid""]",CPU hours (c5.9xlarge),2024-04-01 15:16:50,,2024-04-01 15:16:51
+6b79331c-d975-49b6-959a-a6dad15c0e39,sum,"[""words""]",SANDBOX,,Language Model (langModel1),2024-04-01 15:16:54,,2024-04-01 15:16:54
+da295f4b-9066-4a64-8b5f-dadad28c360d,sum,"[""cpu_hours""]",SANDBOX,"[""clusterid""]",CPU hours (c5.12xlarge),2024-04-01 15:16:51,,2024-04-01 15:16:51
+50f9ec80-b09d-4c89-b6c2-0f6b7426d24f,sum,"[""storage_gb-hours""]",SANDBOX,"[""clusterid""]",Storage GB-Hours (ca-central-1),2024-04-01 15:16:52,,2024-04-01 15:16:53
+01ab9d47-a286-4dbd-9852-82236166df59,sum,"[""cpu_hours""]",SANDBOX,"[""clusterid""]",CPU hours (r5.xlarge),2024-04-01 15:16:47,,2024-04-01 15:16:47
+7a9ea15d-0d9e-4136-aa1d-66c6539294b9,sum,"[""words""]",SANDBOX,,Language Model (langModel2),2024-04-01 15:16:54,,2024-04-01 15:16:54
+67950eff-3fa6-4475-a6cf-814895badcfe,sum,"[""storage_gb-hours""]",SANDBOX,"[""clusterid""]",Storage GB-Hours (us-west-2),2024-04-01 15:16:53,,2024-04-01 15:16:53
+35758854-5426-45a9-a1fb-99ce33ab1bb6,sum,"[""cpu_hours""]",SANDBOX,"[""clusterid""]",CPU hours (r5.8xlarge),2024-04-01 15:16:50,,2024-04-01 15:16:50
+623d4c79-0768-4e62-9443-d6ea9f6efb27,sum,"[""num_images""]",SANDBOX,,Images (256x256),2024-04-01 15:16:53,,2024-04-01 15:16:53
+b089ac11-1dcc-47d2-af82-19fcf33a6c6a,sum,"[""cpu_hours""]",SANDBOX,"[""clusterid""]",CPU hours (c5.4xlarge),2024-04-01 15:16:49,,2024-04-01 15:16:49
