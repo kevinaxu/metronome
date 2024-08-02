@@ -1,6 +1,93 @@
 import requests
 import json 
 import datetime 
+import csv, io 
+
+
+###################################################
+#
+# GET /customers/:id/invoices
+#
+###################################################
+
+def fetch_customer_invoices(customer_id):
+    url = f"https://api.metronome.com/v1/customers/{customer_id}/invoices"
+    params = {
+        "limit": 100,
+        "skip_zero_qty_line_items": "true",
+        "sort": "date_desc"
+    }
+    headers = {
+        'Authorization': 'Bearer 84811fb7a96fe56a484ed1810ed4a066f92073eae6184615bc365589dd1b9656'
+    }
+
+    response = requests.request("GET", url, headers=headers, params=params)
+    return json.loads(response.text)
+
+
+# pull out invoice data: start_timestamp, end_timestamp
+def parse_customer_invoice(data):
+    status = None                   # "DRAFT", "FINALIZED", None
+    include_line_items = False      # True / False 
+
+    # Using an in-memory file-like object
+    output = io.StringIO()
+    writer = csv.writer(output)
+
+    keys = [
+        "start_timestamp",
+        "end_timestamp",
+        "customer_id",
+        "plan_name",
+        "status",
+        "total",
+        "subtotal",
+        "credit_type.name"
+    ]
+
+    # Write header
+    writer.writerow(keys)
+
+    for invoice in data["data"]:
+        # filter based on status, if available  
+        if status and invoice["status"] != status:
+            continue 
+
+        # convert JSON response into rows 
+        row = [] 
+        for key in keys:
+            if "." in key:
+                values = key.split(".")
+                row.append(invoice.get(values[0], {}).get(values[1]))
+            else:
+                row.append(invoice.get(key, ""))
+        
+        # write to output 
+        writer.writerow(row)
+
+    # Get the CSV content as a string
+    csv_content = output.getvalue() 
+    output.close()
+
+    # Print the CSV content
+    print(csv_content)
+
+
+if __name__ == "__main__":
+
+    customer_id = "334ad07b-7bc1-4e3c-8337-a344837e344f"
+
+    # Invoices 
+    response = fetch_customer_invoices(customer_id)
+    parse_customer_invoice(response)
+
+    # Handle 
+
+
+
+
+
+
 
 
 ###################################################
@@ -39,31 +126,15 @@ def calculate_customer_total_credit_grant(data):
         total += credit["balance"]["including_pending"]
     return round(total, 2)
 
-response = get_customer_credit_grants()
-total_credit = calculate_customer_total_credit_grant(response)
-print("total credit grant:", total_credit)
+# response = get_customer_credit_grants()
+# total_credit = calculate_customer_total_credit_grant(response)
+# print("total credit grant:", total_credit)
 
 # print(response.text)
 
 
-###################################################
-#
-# GET /customers/:id/invoice/:id
-#
-###################################################
 
-# GET /customers/:id/invoice/:id
-def get_customer_invoices():
 
-    # url = "https://api.metronome.com/v1/customers/15b367c9-04b9-4064-9a58-b589928898fd/invoices/93dd17ce-1eed-402c-aa82-06a4a76070de?skip_zero_qty_line_items=<boolean>"
-    # payload={}
-    # headers = {
-    # 'Authorization': 'Bearer 84811fb7a96fe56a484ed1810ed4a066f92073eae6184615bc365589dd1b9656'
-    # }
-    # response = requests.request("GET", url, headers=headers, data=payload)
-
-    response = '{"data":[{"id":"6ee9834b-e1e3-53ff-aac2-482036f10dfc","start_timestamp":"2024-08-01T00:00:00+00:00","end_timestamp":"2024-09-01T00:00:00+00:00","customer_id":"15b367c9-04b9-4064-9a58-b589928898fd","customer_custom_fields":{},"type":"PLAN_ARREARS","credit_type":{"id":"2714e483-4ff1-48e4-9e25-ac732e8f24f2","name":"USD (cents)"},"plan_id":"5b81cb83-fa0b-4ad2-94c7-bbd81502e2d9","plan_name":"Free Plan","plan_custom_fields":{"x-seed-obj-id":"free"},"status":"DRAFT","total":0,"external_invoice":null,"subtotal":0,"line_items":[{"total":0,"credit_type":{"id":"2714e483-4ff1-48e4-9e25-ac732e8f24f2","name":"USD (cents)"},"name":"Language models","product_id":"67deae3d-b324-4321-b3d2-e24582030cc9","quantity":1,"custom_fields":{"x-seed-obj-id":"language-models"},"sub_line_items":[{"charge_id":"734b7b52-59fb-4684-8c67-7be3b40f7a70","name":"Language Model (langModel1)","subtotal":0,"price":0.15,"quantity":0,"custom_fields":{}},{"charge_id":"644c3928-3e23-411d-90ed-141192f285d9","name":"Language Model (langModel2)","subtotal":0,"price":0.25,"quantity":0,"custom_fields":{}},{"charge_id":"a8865527-f069-4c76-9a3b-5059a1d65bac","name":"Language Model (langModel3)","subtotal":0,"price":0.95,"quantity":0,"custom_fields":{}},{"charge_id":"9dea99e6-fbf8-4f43-9a5d-70f008f35b7e","name":"Language Model (langModel4)","subtotal":0,"price":2.3,"quantity":0,"custom_fields":{}}]},{"total":0,"credit_type":{"id":"2714e483-4ff1-48e4-9e25-ac732e8f24f2","name":"USD (cents)"},"name":"Fine tuning","product_id":"4e381b40-b8a4-4fbd-8d47-26988c210839","quantity":1,"custom_fields":{"x-seed-obj-id":"fine-tuning"},"sub_line_items":[{"charge_id":"b20397d9-e4f2-4b5b-abbb-3127bbeb7ab5","name":"Fine Tuning (langModel1)","subtotal":0,"price":0.13,"quantity":0,"custom_fields":{}},{"charge_id":"463a760d-5979-477f-874a-4f53cb8e9955","name":"Fine Tuning (langModel2)","subtotal":0,"price":0.22999999999999998,"quantity":0,"custom_fields":{}},{"charge_id":"95b1653a-42b0-401e-baf5-642586f17a79","name":"Fine Tuning (langModel3)","subtotal":0,"price":0.9299999999999999,"quantity":0,"custom_fields":{}},{"charge_id":"7f06ce8f-30ff-4dea-9efd-2a49e9693ee3","name":"Fine Tuning (langModel4)","subtotal":0,"price":2,"quantity":0,"custom_fields":{}}]},{"total":0,"credit_type":{"id":"2714e483-4ff1-48e4-9e25-ac732e8f24f2","name":"USD (cents)"},"name":"Images modeled","product_id":"08a79be8-27e2-4a91-9616-70590d45531f","quantity":1,"custom_fields":{"x-seed-obj-id":"images-modeled"},"sub_line_items":[{"charge_id":"9acbad1b-a1b5-4a8b-927b-a44eae463ec9","name":"Images (256x256)","subtotal":0,"price":15,"quantity":0,"custom_fields":{}},{"charge_id":"6a6cef23-a5d2-4124-be4b-5dde8e6f57f5","name":"Images (512x512)","subtotal":0,"price":28.000000000000004,"quantity":0,"custom_fields":{}},{"charge_id":"7657fb9f-d17a-419a-b87f-83a696d47b5e","name":"Images (1024x1024)","subtotal":0,"price":45,"quantity":0,"custom_fields":{}}]}],"invoice_adjustments":[],"custom_fields":{},"billable_status":"billable"},{"id":"93dd17ce-1eed-402c-aa82-06a4a76070de","start_timestamp":"2024-07-01T00:00:00+00:00","end_timestamp":"2024-08-01T00:00:00+00:00","customer_id":"15b367c9-04b9-4064-9a58-b589928898fd","customer_custom_fields":{},"type":"PLAN_ARREARS","credit_type":{"id":"2714e483-4ff1-48e4-9e25-ac732e8f24f2","name":"USD (cents)"},"plan_id":"5b81cb83-fa0b-4ad2-94c7-bbd81502e2d9","plan_name":"Free Plan","plan_custom_fields":{"x-seed-obj-id":"free"},"status":"DRAFT","total":211218.02000000002,"external_invoice":null,"subtotal":293912.27,"line_items":[{"total":35171.5,"credit_type":{"id":"2714e483-4ff1-48e4-9e25-ac732e8f24f2","name":"USD (cents)"},"name":"Language models","product_id":"67deae3d-b324-4321-b3d2-e24582030cc9","quantity":1,"custom_fields":{"x-seed-obj-id":"language-models"},"sub_line_items":[{"charge_id":"734b7b52-59fb-4684-8c67-7be3b40f7a70","name":"Language Model (langModel1)","subtotal":1326.45,"price":0.15,"quantity":8843,"custom_fields":{}},{"charge_id":"644c3928-3e23-411d-90ed-141192f285d9","name":"Language Model (langModel2)","subtotal":1985.5,"price":0.25,"quantity":7942,"custom_fields":{}},{"charge_id":"a8865527-f069-4c76-9a3b-5059a1d65bac","name":"Language Model (langModel3)","subtotal":9160.85,"price":0.95,"quantity":9643,"custom_fields":{}},{"charge_id":"9dea99e6-fbf8-4f43-9a5d-70f008f35b7e","name":"Language Model (langModel4)","subtotal":22698.7,"price":2.3,"quantity":9869,"custom_fields":{}}]},{"total":30110.77,"credit_type":{"id":"2714e483-4ff1-48e4-9e25-ac732e8f24f2","name":"USD (cents)"},"name":"Fine tuning","product_id":"4e381b40-b8a4-4fbd-8d47-26988c210839","quantity":1,"custom_fields":{"x-seed-obj-id":"fine-tuning"},"sub_line_items":[{"charge_id":"b20397d9-e4f2-4b5b-abbb-3127bbeb7ab5","name":"Fine Tuning (langModel1)","subtotal":1220.31,"price":0.13,"quantity":9387,"custom_fields":{}},{"charge_id":"463a760d-5979-477f-874a-4f53cb8e9955","name":"Fine Tuning (langModel2)","subtotal":1749.84,"price":0.22999999999999998,"quantity":7608,"custom_fields":{}},{"charge_id":"95b1653a-42b0-401e-baf5-642586f17a79","name":"Fine Tuning (langModel3)","subtotal":9238.619999999999,"price":0.9299999999999999,"quantity":9934,"custom_fields":{}},{"charge_id":"7f06ce8f-30ff-4dea-9efd-2a49e9693ee3","name":"Fine Tuning (langModel4)","subtotal":17902,"price":2,"quantity":8951,"custom_fields":{}}]},{"total":228630,"credit_type":{"id":"2714e483-4ff1-48e4-9e25-ac732e8f24f2","name":"USD (cents)"},"name":"Images modeled","product_id":"08a79be8-27e2-4a91-9616-70590d45531f","quantity":1,"custom_fields":{"x-seed-obj-id":"images-modeled"},"sub_line_items":[{"charge_id":"9acbad1b-a1b5-4a8b-927b-a44eae463ec9","name":"Images (256x256)","subtotal":28695,"price":15,"quantity":1913,"custom_fields":{}},{"charge_id":"6a6cef23-a5d2-4124-be4b-5dde8e6f57f5","name":"Images (512x512)","subtotal":70560.00000000001,"price":28.000000000000004,"quantity":2520,"custom_fields":{}},{"charge_id":"7657fb9f-d17a-419a-b87f-83a696d47b5e","name":"Images (1024x1024)","subtotal":129375,"price":45,"quantity":2875,"custom_fields":{}}]}],"invoice_adjustments":[{"total":-82694.25,"credit_type":{"id":"2714e483-4ff1-48e4-9e25-ac732e8f24f2","name":"USD (cents)"},"name":"Credits applied: Acme Corp Promotional Credit Grant","credit_grant_id":"ec3eb590-d8e3-435e-8345-e9db79d12888","credit_grant_custom_fields":{}}],"custom_fields":{},"billable_status":"billable"}],"next_page":null}'
-    return json.loads(response)
 
 def transform_get_customer_invoice(data):
     csv_string = ''
