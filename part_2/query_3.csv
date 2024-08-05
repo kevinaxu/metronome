@@ -1,0 +1,6 @@
+customer_id,plan_id,plan_name,status,total,name,quantity,total,credit_type_name,start_timestamp,end_timestamp
+9ca4743f-5c9e-46e3-a2db-1d484405d5ad,42e42afb-1817-4b1b-b20e-295f3d82c189,Infra SaaS Paygo,FINALIZED,810127.205,CPU Hours,1,222215.3,USD (cents),2024-03-01 0:00:00,2024-04-01 0:00:00
+9ca4743f-5c9e-46e3-a2db-1d484405d5ad,42e42afb-1817-4b1b-b20e-295f3d82c189,Infra SaaS Paygo,FINALIZED,810127.205,Storage,1,587911.905,USD (cents),2024-03-01 0:00:00,2024-04-01 0:00:00
+7c5a8bc2-823e-4b11-9f41-6d5e711c2485,5b81cb83-fa0b-4ad2-94c7-bbd81502e2d9,Free Plan,FINALIZED,295411.62,Fine tuning,1,32868.72,USD (cents),2024-03-01 0:00:00,2024-04-01 0:00:00
+7c5a8bc2-823e-4b11-9f41-6d5e711c2485,5b81cb83-fa0b-4ad2-94c7-bbd81502e2d9,Free Plan,FINALIZED,295411.62,Images modeled,1,227669,USD (cents),2024-03-01 0:00:00,2024-04-01 0:00:00
+7c5a8bc2-823e-4b11-9f41-6d5e711c2485,5b81cb83-fa0b-4ad2-94c7-bbd81502e2d9,Free Plan,FINALIZED,295411.62,Language models,1,34873.9,USD (cents),2024-03-01 0:00:00,2024-04-01 0:00:00
