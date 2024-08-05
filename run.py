@@ -13,7 +13,6 @@ class CustomerReportBuilder:
     '''
     def __init__(self):
         self.report_data = [] 
-        self.csv_filename = "out.csv"
 
     ###################################################
     # Customers
@@ -29,15 +28,13 @@ class CustomerReportBuilder:
             self.report_data.append(customer_record) 
             
     def fetch_customers(self, customer_ids):
-        headers = {
-            'Authorization': 'Bearer 84811fb7a96fe56a484ed1810ed4a066f92073eae6184615bc365589dd1b9656'
-        }
         url = "https://api.metronome.com/v1/customers"
         params = { "limit": 10 }
+
         # filter based on customer_ids, if available 
         if customer_ids is not None:
             params["customer_ids"] = customer_ids
-        return self.fetch_api(url, 'GET', params=params, payload=payload)
+        return self.fetch_api(url, 'GET', params=params)
 
 
 
@@ -46,6 +43,13 @@ class CustomerReportBuilder:
     ###################################################
 
     def load_customer_credits(self):
+        for customer_record in self.report_data:
+            credit_data = self.fetch_customer_credit(customer_record["customer_id"])
+            customer_record["credits"] = self.parse_customer_credit(credit_data)
+
+    def fetch_customer_credit(self, customer_id):
+        print("GET /credits/listGrants for customer:", customer_id)
+
         url = "https://api.metronome.com/v1/credits/listGrants"
         params = {
             "limit": 100
@@ -53,12 +57,33 @@ class CustomerReportBuilder:
         payload = {
             "credit_type_ids": [],
             "customer_ids": [
-                "5f770337-056f-4430-813d-f6ace4ff876c"
+                customer_id
             ],
             "credit_grant_ids": []
         }
         return self.fetch_api(url, 'POST', params=params, payload=payload)
 
+
+    def parse_customer_credit(self, data):
+        credit_records = [] 
+        keys = [
+            "id",
+            "name",
+            "reason",
+            "effective_at",
+            "expires_at",
+        ]
+        for credit in data["data"]:
+            credit_record = { key:credit.get(key, "") for key in keys }
+            credit_record["grant_amount"]       = credit.get("grant_amount", {}).get("amount", "")
+            credit_record["paid_amount"]        = credit.get("paid_amount", {}).get("amount", "")
+            credit_record["balance_inc_pending"] = credit.get("balance", {}).get("including_pending", "")
+            credit_record["balance_exc_pending"] = credit.get("balance", {}).get("excluding_pending", "")
+            credit_records.append(credit_record)
+
+        print(credit_records, end='\n')
+        
+    
 
     ###################################################
     ### Invoices 
@@ -76,10 +101,7 @@ class CustomerReportBuilder:
             "skip_zero_qty_line_items": "true",
             "sort": "date_desc"
         }
-        headers = {
-            'Authorization': 'Bearer 84811fb7a96fe56a484ed1810ed4a066f92073eae6184615bc365589dd1b9656'
-        }
-        return self.fetch_api(url, 'GET', params=params, payload=payload)
+        return self.fetch_api(url, 'GET', params=params)
 
 
     def parse_customer_invoice(self, data):
@@ -119,31 +141,31 @@ class CustomerReportBuilder:
     ###################################################
 
     def fetch_api(self, url, method='GET', params={}, payload={}):
-            headers = {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer 84811fb7a96fe56a484ed1810ed4a066f92073eae6184615bc365589dd1b9656'
-            }
-            try: 
-                response = requests.request(method, url, headers=headers, params=params, json=payload)
-                if response.status_code == 200:
-                    return json.loads(response.text)
-                else:
-                    raise ValueError(f"Unexpected status code: {response.status_code}")
-            except requests.RequestException as e:
-                print(f"Request failed: {e}")
-            except ValueError as e:
-                print(f"Value error: {e}")
-            except Exception as e:
-                print(f"An error occurred: {e}")
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer XXXXXX'
+        }
+        try: 
+            response = requests.request(method, url, headers=headers, params=params, json=payload)
+            if response.status_code == 200:
+                return json.loads(response.text)
+            else:
+                raise ValueError(f"Unexpected status code: {response.status_code}")
+        except requests.RequestException as e:
+            print(f"Request failed: {e}")
+        except ValueError as e:
+            print(f"Value error: {e}")
+        except Exception as e:
+            print(f"An error occurred: {e}")
     
-
 
     ###################################################
     ### Write to CSV 
     ###################################################
 
-    def to_csv(self):
+    def to_csv(self, output_file):
         # Write header if the file is new
+        self.csv_filename = output_file 
 
         # TODO: make this dynamic 
         self.header = ["customer_name", "customer_id", "invoice_id", "start_timestamp", "end_timestamp", "plan_name", "status", "total", "subtotal", "credit_type.name"]
@@ -179,23 +201,16 @@ class CustomerReportBuilder:
             writer.writerow(row)
 
 
-
 if __name__ == "__main__":
 
     builder = CustomerReportBuilder()
-    builder.load_customers("004747b8-9124-4060-989a-8d1075af2424")
-    # builder.load_customers()
-    builder.load_customer_invoices()
-    builder.to_csv()
+    # builder.load_customers("004747b8-9124-4060-989a-8d1075af2424")
+    builder.load_customers()
+
+    # builder.load_customer_invoices()
+    builder.load_customer_credits()
+
+    # builder.to_csv("out.csv")
     # print(builder.report_data)
-
-    # customer_id = "334ad07b-7bc1-4e3c-8337-a344837e344f"
-
-    # Invoices 
-    # response = fetch_customer_invoices(customer_id)
-    # parse_customer_invoice(response)
-
-    # Handle 
-
 
 
