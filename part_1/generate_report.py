@@ -3,14 +3,10 @@ import json
 import datetime 
 import csv, io 
 import os 
+import pprint
 
 class CustomerReportBuilder:
 
-    '''
-    [   
-        {'customer_name': 'DJLAPQ Ltd.', 'qcustomer_id': '004747b8-9124-4060-989a-8d1075af2424'}
-    ]
-    '''
     def __init__(self):
         self.report_data = [] 
 
@@ -20,6 +16,10 @@ class CustomerReportBuilder:
 
     def load_customers(self, customer_ids=None): 
         data = self.fetch_customers(customer_ids)
+        if not data: 
+            print("No data returned from fetch_customers()")
+            return 
+
         for customer in data["data"]:
             customer_record = {
                 "customer_name": customer.get("name", ""),
@@ -29,13 +29,12 @@ class CustomerReportBuilder:
             
     def fetch_customers(self, customer_ids):
         url = "https://api.metronome.com/v1/customers"
-        params = { "limit": 10 }
+        params = { "limit": 5 }
 
         # filter based on customer_ids, if available 
         if customer_ids is not None:
             params["customer_ids"] = customer_ids
         return self.fetch_api(url, 'GET', params=params)
-
 
 
     ###################################################
@@ -45,11 +44,12 @@ class CustomerReportBuilder:
     def load_customer_credits(self):
         for customer_record in self.report_data:
             credit_data = self.fetch_customer_credit(customer_record["customer_id"])
-            customer_record["credits"] = self.parse_customer_credit(credit_data)
+            if not credit_data: 
+                print("No credit data returned for customer:", customer_record["customer_id"])
+            else:
+                customer_record["credits"] = self.parse_customer_credit(credit_data)
 
     def fetch_customer_credit(self, customer_id):
-        print("GET /credits/listGrants for customer:", customer_id)
-
         url = "https://api.metronome.com/v1/credits/listGrants"
         params = {
             "limit": 100
@@ -73,6 +73,7 @@ class CustomerReportBuilder:
             "effective_at",
             "expires_at",
         ]
+        credit_records = [] 
         for credit in data["data"]:
             credit_record = { key:credit.get(key, "") for key in keys }
             credit_record["grant_amount"]       = credit.get("grant_amount", {}).get("amount", "")
@@ -80,10 +81,8 @@ class CustomerReportBuilder:
             credit_record["balance_inc_pending"] = credit.get("balance", {}).get("including_pending", "")
             credit_record["balance_exc_pending"] = credit.get("balance", {}).get("excluding_pending", "")
             credit_records.append(credit_record)
-
-        print(credit_records, end='\n')
         
-    
+        return credit_records
 
     ###################################################
     ### Invoices 
@@ -92,7 +91,10 @@ class CustomerReportBuilder:
     def load_customer_invoices(self):
         for customer_record in self.report_data:
             invoice_data = self.fetch_customer_invoice(customer_record["customer_id"])
-            customer_record["invoices"] = self.parse_customer_invoice(invoice_data)
+            if not invoice_data:
+                print("No invoice data returned for customer:", customer_record["customer_id"])
+            else:
+                customer_record["invoices"] = self.parse_customer_invoice(invoice_data)
 
     def fetch_customer_invoice(self, customer_id):
         url = f"https://api.metronome.com/v1/customers/{customer_id}/invoices"
@@ -103,17 +105,16 @@ class CustomerReportBuilder:
         }
         return self.fetch_api(url, 'GET', params=params)
 
-
     def parse_customer_invoice(self, data):
         status = None                   # "DRAFT", "FINALIZED", None
         keys = [
             "id",
-            "start_timestamp",
-            "end_timestamp",
             "plan_name",
             "status",
             "total",
             "subtotal",
+            "start_timestamp",
+            "end_timestamp",
             "credit_type.name"
         ]
 
@@ -157,6 +158,8 @@ class CustomerReportBuilder:
             print(f"Value error: {e}")
         except Exception as e:
             print(f"An error occurred: {e}")
+
+
     
 
     ###################################################
@@ -167,33 +170,84 @@ class CustomerReportBuilder:
         # Write header if the file is new
         self.csv_filename = output_file 
 
-        # TODO: make this dynamic 
-        self.header = ["customer_name", "customer_id", "invoice_id", "start_timestamp", "end_timestamp", "plan_name", "status", "total", "subtotal", "credit_type.name"]
+        self.header = [
+            "customer_name",
+            "customer_id",
+            "type",
+            "transaction_id",
+            "plan_name",
+            "status",
+            "total",
+            "subtotal",
+            "invoice_credit_type",
+            "credit_name", 
+            "credit_reason",
+            "grant_amount",
+            "paid_amount",
+            "balance_inc_pending",
+            "balance_exc_pending",
+            "date_start",
+            "date_end",
+        ]        
         self.write_header()
         
         # Iterate over customers and their invoices
         for customer in self.report_data:
-            customer_values = [customer[key] for key in ["customer_name", "customer_id"]]
+            # Write invoice rows
+            for invoice in customer['invoices']:
+                self.write_row([
+                    customer['customer_name'],
+                    customer['customer_id'],
+                    'invoice',
+                    invoice['id'],
+                    invoice['plan_name'],
+                    invoice['status'],
+                    invoice['total'],
+                    invoice['subtotal'],
+                    invoice['credit_type.name'],
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    self.convert_timestamp_format(invoice['start_timestamp']),
+                    self.convert_timestamp_format(invoice['end_timestamp']),
+                ])
 
-            for invoice in customer.get("invoices", []):
-                invoice_values = [invoice[key] for key in invoice.keys()]
+            # Write credit rows
+            for credit in customer['credits']:
+                self.write_row([
+                    customer['customer_name'],
+                    customer['customer_id'],
+                    'credit',
+                    credit['id'],
+                    '',
+                    '',  # Plan name is not applicable to credits
+                    '',  # Status is not applicable to credits
+                    '',  # Total is not applicable to credits
+                    '',  # Subtotal is not applicable to 
+                    credit['name'],
+                    credit['reason'],
+                    credit['grant_amount'],
+                    credit['paid_amount'],
+                    credit['balance_inc_pending'],
+                    credit['balance_exc_pending'],
+                    self.convert_timestamp_format(credit['effective_at']),
+                    self.convert_timestamp_format(credit['expires_at']),
+                ])
 
-                # Write the row for each invoice
-                self.write_row(customer_values + invoice_values)
-
+    def convert_timestamp_format(self, date_str): 
+        date_obj = datetime.datetime.fromisoformat(date_str.replace("Z", "+00:00"))
+        human_readable_date = date_obj.strftime("%b %-d, %Y")
+        return human_readable_date
 
     def write_header(self):
-        # Check if the file exists
         file_exists = os.path.isfile(self.csv_filename)
-        
-        # Open the CSV file in append mode
         with open(self.csv_filename, 'a', newline='') as file:
             writer = csv.writer(file)
-            
-            # Write the header if the file is new
             if not file_exists:
                 writer.writerow(self.header)
-
 
     def write_row(self, row):
         with open(self.csv_filename, 'a', newline='') as file:
@@ -202,15 +256,13 @@ class CustomerReportBuilder:
 
 
 if __name__ == "__main__":
+    try: 
+        builder = CustomerReportBuilder()
+        builder.load_customers()                # Generate report for all customers (limit: 5)
+        # builder.load_customers("004747b8-9124-4060-989a-8d1075af2424")    # Run report for single customer
+        builder.load_customer_invoices()        # Load customer invoice 
+        builder.load_customer_credits()         # Load customer credit grants
+        builder.to_csv("report.csv")            # Export to 'report.csv'
 
-    builder = CustomerReportBuilder()
-    # builder.load_customers("004747b8-9124-4060-989a-8d1075af2424")
-    builder.load_customers()
-
-    # builder.load_customer_invoices()
-    builder.load_customer_credits()
-
-    # builder.to_csv("out.csv")
-    # print(builder.report_data)
-
-
+    except Exception as e:
+        print(f"An error occurred while generating customer report: {e}")
