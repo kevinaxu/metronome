@@ -86,7 +86,7 @@ JOIN sub_line_item AS sli ON li.id = sli.line_item_id
 	FROM invoice AS i
 	JOIN customer AS cust ON cust.id = i.customer_id
 	WHERE cust.name = "A1 Company"
-	AND i.start_timestamp = '2024-02-29 0:00:00'
+	AND i.start_timestamp BETWEEN '2024-03-01 0:00:00' AND '2024-04-01 0:00:00';
 ) AS inv ON li.invoice_id = inv.id;
 ```
 
