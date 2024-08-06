@@ -5,6 +5,8 @@ import csv, io
 import os 
 import pprint
 
+debug = True
+
 class CustomerReportBuilder:
 
     def __init__(self):
@@ -28,6 +30,8 @@ class CustomerReportBuilder:
             self.report_data.append(customer_record) 
             
     def fetch_customers(self, customer_ids):
+        if debug: 
+            print("GET /customers")
         url = "https://api.metronome.com/v1/customers"
         params = { "limit": 5 }
 
@@ -50,6 +54,8 @@ class CustomerReportBuilder:
                 customer_record["credits"] = self.parse_customer_credit(credit_data)
 
     def fetch_customer_credit(self, customer_id):
+        if debug: 
+            print("POST /credits/listGrants for:", customer_id)
         url = "https://api.metronome.com/v1/credits/listGrants"
         params = {
             "limit": 100
@@ -97,6 +103,9 @@ class CustomerReportBuilder:
                 customer_record["invoices"] = self.parse_customer_invoice(invoice_data)
 
     def fetch_customer_invoice(self, customer_id):
+        if debug: 
+            print("GET /customers/invoices for:", customer_id)
+
         url = f"https://api.metronome.com/v1/customers/{customer_id}/invoices"
         params = {
             "limit": 100,
@@ -159,8 +168,6 @@ class CustomerReportBuilder:
         except Exception as e:
             print(f"An error occurred: {e}")
 
-
-    
 
     ###################################################
     ### Write to CSV 
@@ -262,7 +269,12 @@ if __name__ == "__main__":
         # builder.load_customers("004747b8-9124-4060-989a-8d1075af2424")    # Run report for single customer
         builder.load_customer_invoices()        # Load customer invoice 
         builder.load_customer_credits()         # Load customer credit grants
-        builder.to_csv("report.csv")            # Export to 'report.csv'
+
+        output_file = "report.csv"              # Export to csv
+        builder.to_csv(output_file)            
+        if debug: 
+            print("Generated customer report:", output_file)
+
 
     except Exception as e:
         print(f"An error occurred while generating customer report: {e}")
