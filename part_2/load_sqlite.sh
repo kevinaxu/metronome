@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS "events"(
     "customer_id" TEXT, 
     "timestamp" TEXT, 
     "event_type" TEXT,
-    "properties" JSON, 
+    "properties" TEXT, 
     "environment_type" TEXT
 );
 .import /Users/Kevin/Dev/2024/metronome/sample_egress_data/events.csv events --skip 1

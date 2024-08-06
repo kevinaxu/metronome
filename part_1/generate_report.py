@@ -144,7 +144,7 @@ class CustomerReportBuilder:
     def fetch_api(self, url, method='GET', params={}, payload={}):
         headers = {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer XXXXXX'
+            'Authorization': 'Bearer XXX'
         }
         try: 
             response = requests.request(method, url, headers=headers, params=params, json=payload)
