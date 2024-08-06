@@ -2,9 +2,10 @@
 # Part I 
 
 * What data to include in the Customer Summary? 
-	* Customer info - `customer_id`, `customer_name`
-	* Invoices - 
-	* Credit grants - `
+	* Customer info: `customer_id`, `customer_name`,
+	* Invoices: `id`, `plan_name`, `status`, `total`, `subtotal`, `credit_type.name`
+	* Credit grants: `name`, `reason`, `grant_amount`, `paid_amount`, `balance_inc_pending`, `balance_exc_pending`
+    * Shared data: `record type` (either `invoice` or `credit`)`date_start`, `end` 
 * How to represent the data as CSV? 
 	* A given Customer can be associated with many Invoices and many Credit Grants
 	* I wanted to include both types of data in the customer summary report, so I decided to list out all Invoices and Credit grants for a given Customer. 
@@ -24,8 +25,8 @@
 		* `builder.loadCreditData()`
 	* Filter Invoice by status
 
-**Script**: part_1/generate_report.py 
-**Output CSV**: part_1/customers.csv 
+**Script**: (part_1/generate_report.py)[./part_1/generate_report.py]
+**Output CSV**: (part_1/customers.csv)[./part_1/report.csv]
 
 **Sample**: 
 
@@ -62,7 +63,7 @@ AND sli.updated_at BETWEEN '2024-03-10' AND '2024-03-26'
 GROUP BY sli.billable_metric_name;
 ```
 
-**Results**: No results from this query. 
+**Results**: (No results from this query)[./part_2/query_1.csv]
 
 **Questions**: 
 * Which table is the source of truth for the number of images generated? Looks like two tables contain this data: `sub_line_items` and `events`. However, in both cases I was not able to write a query that pulled results. 
@@ -89,7 +90,7 @@ JOIN sub_line_item AS sli ON li.id = sli.line_item_id
 ) AS inv ON li.invoice_id = inv.id;
 ```
 
-**Results**: query_2.csv 
+**Results**: (query_2.csv)[./part_2/query_2.csv]
 
 **Approach**: 
 - Subquery to get all invoices for customer "A1 Company" in March 
@@ -110,7 +111,7 @@ JOIN line_item as li ON li.invoice_id = i.id
 WHERE i.start_timestamp BETWEEN '2024-03-01 0:00:00' AND '2024-04-01 0:00:00';
 ```
 
-**Results**: query_3.csv
+**Results**: (query_3.csv)[./part_2/query_3.csv]
 
 **Approach**: 
 - Get all invoice `line_item` 's associated with invoice for March 
