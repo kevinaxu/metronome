@@ -25,8 +25,8 @@
 		* `builder.loadCreditData()`
 	* Filter Invoice by status
 
-**Script**: (part_1/generate_report.py)[./part_1/generate_report.py]
-**Output CSV**: (part_1/customers.csv)[./part_1/report.csv]
+**Script**: [part_1/generate_report.py](part_1/generate_report.py)
+**Output CSV**: [part_1/customers.csv](part_1/report.csv)
 
 **Sample**: 
 
@@ -63,7 +63,7 @@ AND sli.updated_at BETWEEN '2024-03-10' AND '2024-03-26'
 GROUP BY sli.billable_metric_name;
 ```
 
-**Results**: (No results from this query)[./part_2/query_1.csv]
+**Results**: [No results from this query](part_2/query_1.csv)
 
 **Questions**: 
 * Which table is the source of truth for the number of images generated? Looks like two tables contain this data: `sub_line_items` and `events`. However, in both cases I was not able to write a query that pulled results. 
@@ -90,7 +90,7 @@ JOIN sub_line_item AS sli ON li.id = sli.line_item_id
 ) AS inv ON li.invoice_id = inv.id;
 ```
 
-**Results**: (query_2.csv)[./part_2/query_2.csv]
+**Results**: [query_2.csv](part_2/query_2.csv)
 
 **Approach**: 
 - Subquery to get all invoices for customer "A1 Company" in March 
@@ -111,7 +111,7 @@ JOIN line_item as li ON li.invoice_id = i.id
 WHERE i.start_timestamp BETWEEN '2024-03-01 0:00:00' AND '2024-04-01 0:00:00';
 ```
 
-**Results**: (query_3.csv)[./part_2/query_3.csv]
+**Results**: [query_3.csv](part_2/query_3.csv)
 
 **Approach**: 
 - Get all invoice `line_item` 's associated with invoice for March 
